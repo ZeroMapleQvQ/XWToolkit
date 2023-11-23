@@ -1,4 +1,3 @@
-# # ! F:\软件\WPy64-31140\python-3.11.4.amd64\python.exe
 # -*- encoding: utf-8 -*-
 from os import path, mkdir, rmdir
 from keyboard import is_pressed
