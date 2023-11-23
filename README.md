@@ -1,7 +1,7 @@
 # XWToolkit/希沃工具箱
 
 ## 使用方法
-1. 到https://github.com/LingYingawa/XWToolkit/releases/下载XWToolkit-xxx.zip
+1. 到https://github.com/LingYingawa/XWToolkit/releases 下载XWToolkit-xxx.zip
 2. 将XWToolkit-xxx.zip放置在合适的位置
 3. 解压XWToolkit-xxx.zip
 4. 打开解压后得到的文件夹
