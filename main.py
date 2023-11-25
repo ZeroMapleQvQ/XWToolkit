@@ -11,36 +11,16 @@ from tkinter.messagebox import showerror, showinfo, showwarning, ERROR, INFO, WA
 from subprocess import run, PIPE
 from screen import *
 
-# 删除enable文件夹
-if path.isdir(".\\enable") == True:
-    rmdir(".\\enable")
-# 建立disable文件夹
-if path.isdir(".\\disable") == False:
-    mkdir(".\\disable")
+if path.exists(".\\ID.txt") == False:
+    run(".\\ID.exe", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
-enable_touch()  # 防止禁用触摸屏后程序异常退出导致无法启用触摸屏,在程序开始运行时先启用触摸屏
+try:
+    with open(".\\ID.txt") as f:
+        ID = f.read()
+except:
+    pass
 
-img = Image.open("img.png")  # 托盘图标
-# 托盘菜单
-menu = (
-    pystray.MenuItem("结束希沃软件", lambda: kill()),
-    pystray.MenuItem("暂停/恢复", lambda: hang_on_or_continue()),
-    pystray.MenuItem("Exit", lambda: run(
-        "taskkill>nul 2>nul /T /F /IM XWToolkit.exe", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE))
-)
-icon = pystray.Icon("name", img, "XWToolkit\n运行中", menu)
-
-
-# 要结束的进程列表
-kill_list = ["EasiNote.exe", "EasiCamera.exe", "PhotosApp.exe",
-             "wps.exe", "wpp.exe", "wpsoffice.exe", "msedge.exe"]
-
-
-def kill():
-    '''结束进程'''
-    for i in kill_list:
-        run("taskkill>nul 2>nul /T /F /IM "+i, shell=True, stdin=PIPE,
-            stdout=PIPE, stderr=PIPE)
+enable_touch(ID)  # 防止禁用触摸屏后程序异常退出导致无法启用触摸屏,在程序开始运行时先启用触摸屏
 
 
 def showMessageBox(message, type, timeout):
@@ -67,6 +47,31 @@ def showMessageBox(message, type, timeout):
         pass
 
 
+img = Image.open("img.png")  # 托盘图标
+# 托盘菜单
+menu = (
+    pystray.MenuItem("结束希沃软件", lambda: kill()),
+    pystray.MenuItem("修改设备实例路径", lambda: run(
+        ".\\ID.exe", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)),
+    pystray.MenuItem("暂停/恢复", lambda: hang_on_or_continue()),
+    pystray.MenuItem("Exit", lambda: run(
+        "taskkill>nul 2>nul /T /F /IM XWToolkit.exe", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE))
+)
+icon = pystray.Icon("name", img, "XWToolkit\n运行中", menu)
+
+
+# 要结束的进程列表
+kill_list = ["EasiNote.exe", "EasiCamera.exe", "PhotosApp.exe",
+             "wps.exe", "wpp.exe", "wpsoffice.exe", "msedge.exe"]
+
+
+def kill():
+    '''结束进程'''
+    for i in kill_list:
+        run("taskkill>nul 2>nul /T /F /IM "+i, shell=True, stdin=PIPE,
+            stdout=PIPE, stderr=PIPE)
+
+
 def execute():
     '''获取按键并执行对应操作'''
     # 结束进程
@@ -77,7 +82,8 @@ def execute():
     # 结束进程并息屏
     elif is_pressed("down") == True:
         kill()
-        screenOff()
+        run("nircmdc monitor off", shell=True, stdin=PIPE,
+            stdout=PIPE, stderr=PIPE)
         showMessageBox("操作已完成", "info", 1000)
         return True
     # 关机
@@ -90,10 +96,10 @@ def execute():
     elif is_pressed("esc") == True:
         # 判断目前触摸屏状态
         if path.isdir("enable") == True:
-            disable_touch()  # 禁用触摸屏
+            disable_touch(ID)  # 禁用触摸屏
             return "disable"
         elif path.isdir("disable") == True:
-            enable_touch()  # 启用触摸屏
+            enable_touch(ID)  # 启用触摸屏
             return "enable"
     else:
         pass

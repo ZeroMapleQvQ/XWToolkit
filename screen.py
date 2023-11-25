@@ -1,40 +1,27 @@
-from os import rmdir, mkdir
-from ctypes import windll
+from os import rmdir, mkdir, path
 from subprocess import run, PIPE
 
-with open("ID.txt") as f:
-    read = f.read()
+# 删除enable文件夹
+if path.isdir(".\\enable") == True:
+    rmdir(".\\enable")
+# 建立disable文件夹
+if path.isdir(".\\disable") == False:
+    mkdir(".\\disable")
 
 
-def enable_touch():
+def enable_touch(ID):
     '''启用触摸屏'''
-    run(".\devcon.exe>nul 2>nul enable "+read,
+    run(".\devcon.exe>nul 2>nul enable "+ID,
         shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     rmdir("disable")
     mkdir("enable")
     return "enable"
 
 
-def disable_touch():
+def disable_touch(ID):
     '''禁用触摸屏'''
-    run(".\devcon.exe>nul 2>nul disable "+read,
+    run(".\devcon.exe>nul 2>nul disable "+ID,
         shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     rmdir("enable")
     mkdir("disable")
     return "disable"
-
-
-HWND_BROADCAST = 0xffff
-WM_SYSCOMMAND = 0x0112
-SC_MONITORPOWER = 0xF170
-MonitorPowerOff = 2
-SW_SHOW = 5
-
-
-def screenOff():
-    '''息屏'''
-    windll.user32.PostMessageW(HWND_BROADCAST, WM_SYSCOMMAND,
-                               SC_MONITORPOWER, MonitorPowerOff)
-    shell32 = windll.LoadLibrary("shell32.dll")
-    shell32.ShellExecuteW(None, 'open', 'rundll32.exe',
-                          'USER32', '', SW_SHOW)
